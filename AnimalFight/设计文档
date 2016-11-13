@@ -1,0 +1,182 @@
+设计文档：
+
+*程序结构设计与分析
+
+1.简要概括读入和初始化地形地图、动物地图的方法。
+读入使用的是Scanner(new File())
+scanner1 = new Scanner(new File("tile.txt"));
+初始化用的是数组元素逐一赋值
+将文件读入为字符串，再转成char数组，再将char数组的元素转成int，赋值给数组
+使用了如：
+nextLine()
+charAt();
+Integer.parseInt(String.valueOf());
+等方法。
+
+2.如果代码包含多个类，简述每个类的作用和设计思路。
+因为这个pj大部分是在上数组之前写的，所以代码没有太多使用类与对象的知识（根本没有使用对象知识）
+用到的类也只是用来封装方法，并不实例化为对象，而是直接从类里调用
+分为AnimalFight,Origins,Printer三个类，分别：
+AnimalFight是主类（包含主方法和所有有关游戏规则的方法以及存档方法）
+Origins是用来初始化棋盘和动物的类，包括了读取功能，赋最初值，以及分开玩家1，2数据的功能
+Printer是用来打印棋盘和动物的类
+
+3.详细说明关键变量的变量类型及其作用。关键变量指存放了游戏核心数据的变量，
+如地形数组、动物数组、游戏历史数据、自己的类的对象等，一般为类变量。
+变量类型一般为boolean，一维char数组，二维int数组，ArrayList等。
+
+static int[][] animalsMap = Origins.animalsMap;
+//从Origins里面调用animalsMap变量
+private static boolean countStep = true;
+//初始化countStep布尔变量，用来表示将要作出操作的玩家（true则玩家一操作，false则玩家二操作）
+private static int[][] player1animals = Origins.player1animals;
+private static int[][] player2animals = Origins.player2animals;
+//从Origins里面调用两个整形数组，初始化数组player1animals，player2animals，用来储存当前局的动物分布
+private static int[][] playerAnimals = new int[7][9];
+//用来操作当前动物的移动
+private static String playerInput;
+//用来存放用户（玩家）输入
+private static char playerMove;
+//将用户（玩家）输入分解为动物和方向，playerMove存放方向
+private static int playerAnimal;
+//将用户（玩家）输入分解为动物和方向，playerAnimal存放被移动的动物
+private static boolean judgeInputRange;
+//储存输入范围正确性的布尔值（为什么要单列一个变量来储存布尔值是为了防止 通过重复调用方法来获得布尔值）
+private static int destination;
+//用来储存目的地存在动物整形变量
+private static boolean judgeInputFormat;
+//储存输入合法性判断的布尔值（为什么要单列一个变量来储存布尔值是为了防止 通过重复调用方法来获得布尔值）
+private static int[] destinationCoordinate;
+//用来储存目的地的坐标数组
+private static int[] originCoordinate;
+//被移动动物的初始位置坐标数组
+private static int currentStep = 0;
+//currentStep表示当前步数
+private static int biggestStep = 0;
+//biggestStep表示最大存储的步数，即存盘（游戏记录）
+private static int[][][] historyPlayer1 = new int[500][7][9];
+private static int[][][] historyPlayer2 = new int[500][7][9];
+//两个数组，用来储存历史局的动物分布
+private static boolean toHelp;
+//储存【是否输入为help系列】的布尔值（为什么要单列一个变量来储存布尔值是为了防止 通过重复调用方法来获得布尔值）
+private static boolean notGoDie;
+//用来存储动物是否送死的布尔值
+private static boolean animal1InHole;
+private static boolean animal2InHole;
+//两个布尔值用来反映是否有动物进入对方穴，用来帮助判断输赢
+
+4.列举程序中的主要函数并阐述其功能。简述该函数改变了哪些关键变量，改变的作用是什么（如果其作用过于明显或已经提及，可以省略）。
+注：不要复制长段代码，只需要函数签名，如void move(char animal, int direction)，必须包含所以参数和返回值类型。
+
+方法的功能详见注释，此处不作展开
+方法签名列表如下：
+class AnimalFight里的方法:
+  void ErrorInstruction() 
+  void instruction() 
+  void moveAndJudge() 
+  void riverMove() 
+  void normalPlay() 
+  void findAnimalToMove() 
+  void playButWhichKind() 
+  void findDestinationCoordinate() 
+  boolean judgeDestinationIsRiver() 
+  void move(int moveLengthI, int moveLengthJ, boolean range) 
+  void crossRiverPlay() 
+  void eat() 
+  boolean notGoIntoSelfHole() 
+  void notGoDie() 
+  void judgeWinNoAnimalLeft() 
+  void judgeWinAnimalInOppositeHole() 
+  void haveSelfAnimal() 
+  boolean judgeRatEatElephant() 
+  boolean judgeElephantTryToEatRat() 
+  void ratEatElephant() 
+  void anythingEatInHole() 
+  boolean judgeIfRatInTheWay(int[][] pa_int_2) 
+  boolean noRatInTheWay() 
+  void outOfBound() 
+  void animalDoNotExist() 
+  boolean help1() 
+  boolean help2() 
+  void toHelp() 
+  boolean help() 
+  boolean restart() 
+  boolean undo() 
+  int[][] copyArray(int[][] array) 
+  void setHistory() 
+  void setHistory0() 
+  boolean redo() 
+  boolean exit() 
+  void clearRecordHistory() 
+  void printHistory()
+
+class Origins里的方法：
+  void readOriginal()
+  void playerHasAnimals()
+
+class Printer里的方法:
+  void printMapInGame()
+
+
+5.列举并分析几个你觉得你的程序中写的好的和写的不好的地方。
+好的地方：
+基础功能都实现了；
+写的思路比较流畅，结构较为清晰，方便修改；
+
+不好的地方：
+方法过多，调用却不频繁；
+很多方法存在功能重叠的嫌疑（改过以后应该好一些了）
+
+
+
+*编程中遇到的问题和解决策略
+
+1.列举你在写pj中遇到的各种问题和解决策略。
+2.在确保真实性的基础上，最好能体现自己的思考过程，体现编程水平的提升，体现解决问题的能力等。
+
+#各种问题：
+1)在读入时有FileNotFoundException，加上try&catch
+
+2)想返回多个值，但是发现不行
+
+3)原本使用（int）／2来计步，但是在做各种非法输入判断时常常遇到玩家转换的问题，但是修改int数值太繁复
+
+4)main方法中第一盘的初始化要另外写
+
+5)main方法中不知道如何实现无限循环
+
+6)存档，悔棋，撤销悔棋没有头绪
+
+7)经常在debug时将原来的方法改废了
+
+8)最经常出现的是IndexOutOfBoundsException
+
+9)代码重复性太高
+
+10)觉得助教的悔棋每次悔一步不科学，经过争论还是没有改变助教的想法
+
+
+#解决策略
+1)加上try&catch
+
+2)通过修改全局变量达到不用返回值还能改变数组的功能
+（可能与TA长期以来弘扬的传参数，返回值的大政方针不同，但是的确解决了当前问题）
+
+3)想到boolean值表示出手玩家，只需两次！一下就能回到当前玩家重新输入
+
+4)另外写了初始化棋盘方法
+
+5)使用while（true）或者for（；；）
+
+6)经TA提醒，使用计步器和三维数组来存储历史棋局
+
+7)学会了备份的好习惯
+
+8)学着使用debugger查每一步，找出罪魁祸首
+
+9)根据intellij的提示简化，将方法相同的部分再单列出子方法
+
+10)委屈自己改了代码，但是坚信自己原来的想法是正确的
+
+【全剧终】
+
